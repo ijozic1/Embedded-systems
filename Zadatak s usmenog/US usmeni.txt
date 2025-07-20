@@ -1,0 +1,82 @@
+@Zadatak sa usmenog u asembler simulatoru cpulator
+@Hardcodirati niz u memoriji, a zatim pronaci najveci i najmanji element
+@indekse na kojima se nalaze smjestiti odmah iza elemenata niza u memoriju
+.equ N, 5
+.global _start
+
+_start:
+	ldr r4,=niz
+	mov r0, #0
+	mov r1, #5
+	str r1, [r4, r0] @prvi u memoriji - 5
+	add r0, #4
+	mov r1, #3
+	str r1, [r4, r0] @drugi u memoriji - 3
+	add r0, #4
+	mov r1, #4
+	str r1, [r4, r0] @treci u memoriji - 4
+	add r0, #4
+	mov r1, #1
+	str r1, [r4, r0] @cetvrti u memoriji - 1
+	add r0, #4
+	mov r1, #2
+	str r1, [r4, r0] @peti u memoriji - 2
+	mov r0, #0 @ofsset je 0
+	mov r1, #0 @brojac
+	mov r2, #0 @max
+	mov r3, #0 @min
+	mov r5, #6 @ovdje cemo najmanji ali po vrijednost
+	mov r6, #0 @ovdje cemo najveci po vrijednosti
+	
+	loop:
+		cmp r1, #5
+		bgt smjestanje
+		ldr r7, [r4, r0]
+		add r1, #1 @povecan brojac
+		
+		cmp r7,r6
+		bgt veci
+		
+		cmp r5, r7
+		bgt manji
+		
+		add r0, #4
+		b loop
+		
+		veci:
+			mov r6, r7
+			mov r8, r0
+			@sub r8, r4
+			lsrs r8, #2 @dijeljenje sa 4
+			mov r2, r8
+			add r0, #4
+			b loop
+			
+		manji:
+			mov r5, r7
+			mov r8, r0
+			@sub r8, r4
+			lsrs r8, #2 @dijeljenje sa 4
+			mov r3, r8
+			sub r3, #1
+			add r0, #4 @pomjeren offset
+			b loop
+		
+	
+	smjestanje:
+		str r2, [r4, r0] @u r2 ce biti indeks maksimalnog
+		add r0, #4
+		str r3, [r4, r0] @ u r3 ce biti indeks minimalnog
+		b kraj
+		
+	kraj:
+		nop
+		@mov r7,#1 @
+        @swi #0
+		b kraj
+		
+niz:
+	.space 20 @za 5 elemenata
+	
+delimiter:
+	.word 0xffffffff
